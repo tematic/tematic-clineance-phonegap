@@ -1,0 +1,9 @@
+
+/.settings/*
+/.buildpath
+/.project
+/.composer.json
+/.composer.lock
+*~
+*.*~
+
