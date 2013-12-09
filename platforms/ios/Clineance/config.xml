@@ -1,9 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.clineance.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Hello Cordova</name>
+    <name>Clineance</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        Cette application permet au docteur Micaël SCHNEERSOHN d'échanger de façon privilégiée avec ses patients.
+        Le centre médical Clinéance de L'Isle-Adam dans le Val d'Oise (95) est une référence en Ile de France.
     </description>
+    <author email="support@tematic.info" href="http://www.tematic.info">
+        Tematic
+    </author>
     <access origin="*" />
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
@@ -20,14 +24,6 @@
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
     </feature>
-    <name>Clineance</name>
-    <description>
-        Cette application permet au docteur Micaël SCHNEERSOHN d'échanger de façon privilégiée avec ses patients.
-        Le centre médical Clinéance de L'Isle-Adam dans le Val d'Oise (95) est une référence en Ile de France.
-    </description>
-    <author email="support@tematic.info" href="http://www.tematic.info">
-        Tematic
-    </author>
     <feature name="http://api.phonegap.com/1.0/device" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
