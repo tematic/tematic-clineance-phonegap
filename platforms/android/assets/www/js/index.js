@@ -42,7 +42,7 @@ var app = {
     	});
     },
     url: function(path) {
-    	return 'http://192.168.1.14' + (path.substr(0,1) == '/' ? '' : '/') + path;
+    	return 'http://app.clineance.com' + (path.substr(0,1) == '/' ? '' : '/') + path;
     }
 };
 app.initialize();
