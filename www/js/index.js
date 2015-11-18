@@ -1,48 +1,50 @@
 var app = {
-    initialize: function() {
-    	var deviceReadyDeferred = $.Deferred(),
-    		jqmReadyDeferred = $.Deferred(),
-    		jqmCreateDeferred = $.Deferred()
-    	;
+	urlRoot: null,
+	initialize: function(urlRoot, urlPing, urlApp) {
+		var deviceReadyDeferred = $.Deferred(),
+			jqmReadyDeferred = $.Deferred(),
+			jqmCreateDeferred = $.Deferred()
+		;
+		this.urlRoot = urlRoot;
 
-    	document.addEventListener("deviceReady", deviceReadyDeferred.resolve, false);
-    	
-    	$(document).one("mobileinit", function() {
-    		$.support.cors = true;
-    	    $.mobile.allowCrossDomainPages = true;
-    	    $.mobile.phonegapNavigationEnabled = true;
-    	    
+		document.addEventListener("deviceReady", deviceReadyDeferred.resolve, false);
+
+		$(document).one("mobileinit", function() {
+			$.support.cors = true;
+			$.mobile.allowCrossDomainPages = true;
+			$.mobile.phonegapNavigationEnabled = true;
 			jqmReadyDeferred.resolve();
 		});
-    	
-    	$("#startpage").bind('pageshow', jqmCreateDeferred.resolve);
-    	
-    	$.when(deviceReadyDeferred, jqmReadyDeferred, jqmCreateDeferred).then(this.load());
-    },
-    load: function() {    	
-    	var $deviceState = $('#devicestate');
-    	
-    	$deviceState.children('*').hide();
-    	$('.connecting', $deviceState).show();
-    	
-    	$.getJSON(app.url('/crud/auth/is'))
-    	.done(function(data) {
-    		if(typeof data == 'object' && typeof data.url == 'string') {
-            	$deviceState.children('*').hide();
-        		$('.loading', $deviceState).show();
-        		document.location = app.url(data.url);
-    		} else {
-            	$deviceState.children('*').hide();
-        		$('.no-network', $deviceState).show();
-    		}
-    	})
-    	.fail(function() {
-        	$deviceState.children('*').hide();
-    		$('.no-network', $deviceState).show();
-    	});
-    },
-    url: function(path) {
-    	return 'http://app.clineance.com' + (path.substr(0,1) == '/' ? '' : '/') + path;
-    }
+
+		$("#startpage").bind('pageshow', jqmCreateDeferred.resolve);
+
+		$.when(deviceReadyDeferred, jqmReadyDeferred, jqmCreateDeferred).then(this.load(urlPing, urlApp));
+	},
+	load: function(urlPing, urlApp) {		
+		var $deviceState = $('#devicestate');
+
+		$deviceState.children('*').hide();
+		$('.connecting', $deviceState).show();
+
+		$.ajax({
+			type: 'GET',
+			url: app.url(urlPing),
+			data: null,
+			dataType: 'text',
+			cache: false
+		})
+		.done(function(data) {
+			$deviceState.children('*').hide();
+			$('.loading', $deviceState).show();
+			document.location = app.url(urlApp);
+		})
+		.fail(function(a) {
+			$deviceState.children('*').hide();
+			$('.no-network', $deviceState).show();
+		});
+	},
+	url: function(path) {
+		return this.urlRoot + (path.substr(0,1) == '/' ? '' : '/') + path;
+	}
 };
-app.initialize();
+app.initialize('http://patient.site-medecin.com', '/ping.txt', '/');
