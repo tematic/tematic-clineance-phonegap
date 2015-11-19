@@ -93,15 +93,11 @@
 
 // this happens while we are running ( in the background, or from within our own app )
 // only valid if Clineance-Info.plist specifies a protocol to handle
-- (BOOL)application:(UIApplication*)application handleOpenURL:(NSURL*)url
+- (BOOL)application:(UIApplication*)application openURL:(NSURL*)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation
 {
     if (!url) {
         return NO;
     }
-
-    // calls into javascript global function 'handleOpenURL'
-    NSString* jsString = [NSString stringWithFormat:@"handleOpenURL(\"%@\");", url];
-    [self.viewController.webView stringByEvaluatingJavaScriptFromString:jsString];
 
     // all plugins will get the notification, and their handlers will be called
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginHandleOpenURLNotification object:url]];
@@ -109,7 +105,7 @@
     return YES;
 }
 
-// repost the localnotification using the default NSNotificationCenter so multiple plugins may respond
+// repost all remote and local notification using the default NSNotificationCenter so multiple plugins may respond
 - (void)            application:(UIApplication*)application
     didReceiveLocalNotification:(UILocalNotification*)notification
 {
@@ -117,7 +113,33 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:CDVLocalNotification object:notification];
 }
 
+#ifndef DISABLE_PUSH_NOTIFICATIONS
+
+    - (void)                                 application:(UIApplication*)application
+        didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+    {
+        // re-post ( broadcast )
+        NSString* token = [[[[deviceToken description]
+            stringByReplacingOccurrencesOfString:@"<" withString:@""]
+            stringByReplacingOccurrencesOfString:@">" withString:@""]
+            stringByReplacingOccurrencesOfString:@" " withString:@""];
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotification object:token];
+    }
+
+    - (void)                                 application:(UIApplication*)application
+        didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+    {
+        // re-post ( broadcast )
+        [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotificationError object:error];
+    }
+#endif
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
 - (NSUInteger)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
+#else
+- (UIInterfaceOrientationMask)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
+#endif
 {
     // iPhone doesn't support upside down by default, while the iPad does.  Override to allow all orientations always, and let the root view controller decide what's allowed (the supported orientations mask gets intersected).
     NSUInteger supportedInterfaceOrientations = (1 << UIInterfaceOrientationPortrait) | (1 << UIInterfaceOrientationLandscapeLeft) | (1 << UIInterfaceOrientationLandscapeRight) | (1 << UIInterfaceOrientationPortraitUpsideDown);

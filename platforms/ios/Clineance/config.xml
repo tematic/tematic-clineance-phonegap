@@ -64,4 +64,7 @@
     <access origin="*" subdomains="true" />
     <content src="index.html" />
     <allow-navigation href="http://patient.site-medecin.com/*" />
+    <allow-navigation href="http://patient.docpilot.fr/*" />
+    <allow-navigation href="http://clineance.site-medecin.com/*" />
+    <allow-navigation href="http://clineance.docpilot.fr/*" />
 </widget>
